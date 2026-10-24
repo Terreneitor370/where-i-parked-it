@@ -1,0 +1,31 @@
+# MySQL 8 para desarrollo local.
+#   docker compose up -d      # arrancar
+#   docker compose down       # detener (los datos se conservan)
+#   docker compose down -v    # detener y BORRAR los datos (vuelve a aplicar schema.sql)
+#
+# El esquema (apps/api/db/schema.sql) se aplica solo la primera vez que se crea el volumen.
+# Si cambia el esquema: `docker compose down -v && docker compose up -d`, o `npm run db:init` en apps/api.
+services:
+  mysql:
+    image: mysql:8.4
+    container_name: wipi-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: wipi
+      MYSQL_USER: wipi
+      MYSQL_PASSWORD: wipi
+      TZ: UTC
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./apps/api/db/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+volumes:
+  mysql-data:

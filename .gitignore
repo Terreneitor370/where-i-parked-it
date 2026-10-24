@@ -1,0 +1,27 @@
+# Dependencias y builds
+node_modules/
+dist/
+.expo/
+
+# Carpetas nativas generadas por Expo (se regeneran con expo prebuild / run:android)
+apps/*/android/
+apps/*/ios/
+
+# Variables de entorno (nunca se suben; usa los .env.example)
+.env
+.env.*
+!.env.example
+
+# APKs y llaves de firma
+*.apk
+*.aab
+*.jks
+*.keystore
+
+# Sistema y editores
+.DS_Store
+Thumbs.db
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.log

@@ -1,0 +1,45 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # El nombre "ci" es el que se agrega como check obligatorio en el ruleset de main.
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: |
+            apps/api/package-lock.json
+            apps/mobile/package-lock.json
+            apps/watch/package-lock.json
+
+      - name: API - instalar y revisar tipos
+        working-directory: apps/api
+        run: |
+          npm ci
+          npm run typecheck
+
+      - name: Movil - instalar y revisar tipos
+        working-directory: apps/mobile
+        run: |
+          npm ci
+          npm run typecheck
+
+      - name: Reloj - instalar y revisar tipos
+        working-directory: apps/watch
+        run: |
+          npm ci
+          npm run typecheck
