@@ -1,16 +1,18 @@
 import type { ReactNode } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, Text, TextInput, View, type TextInputProps } from 'react-native';
 
-// Componentes base. Estilo minimo a proposito: Kassie define el diseno final.
+// Estilo "Modern Tech Premium": Fondo oscuro, bordes suaves, feedback táctil.
 
 export const colors = {
-  bg: '#F6F7F9',
-  card: '#FFFFFF',
-  text: '#111418',
-  muted: '#6B7280',
-  primary: '#2563EB',
-  danger: '#DC2626',
-  border: '#E5E7EB',
+  bg: '#111827', // Fondo gris pizarra muy oscuro
+  card: '#1F2937', // Tarjetas de un gris un poco más claro
+  text: '#F9FAFB', // Blanco puro
+  muted: '#9CA3AF', // Gris claro para textos secundarios
+  primary: '#3B82F6', // Azul eléctrico
+  primaryText: '#FFFFFF',
+  danger: '#EF4444', // Rojo brillante
+  border: '#374151', // Bordes sutiles
+  inputBg: '#111827', // Inputs se hunden
 };
 
 export function Card({ children }: { children: ReactNode }) {
@@ -28,19 +30,47 @@ export function Button({
   variant?: 'primary' | 'secondary' | 'danger';
   disabled?: boolean;
 }) {
-  const background = variant === 'primary' ? colors.primary : variant === 'danger' ? colors.danger : colors.card;
-  const textColor = variant === 'secondary' ? colors.text : '#FFFFFF';
+  let bgColor = colors.primary;
+  let txtColor = colors.primaryText;
+  let borderColor = 'transparent';
+  let borderWidth = 0;
+
+  if (variant === 'secondary') {
+    bgColor = 'transparent';
+    txtColor = colors.text;
+    borderColor = colors.border;
+    borderWidth = 1;
+  } else if (variant === 'danger') {
+    bgColor = 'rgba(239, 68, 68, 0.1)';
+    txtColor = colors.danger;
+  }
+
+  // Si está deshabilitado, fondo transparente con borde y texto gris
+  if (disabled) {
+    bgColor = 'transparent';
+    txtColor = colors.muted;
+    borderColor = colors.border;
+    borderWidth = 1;
+  }
+
   return (
     <Pressable
       onPress={onPress}
       disabled={disabled}
       style={({ pressed }) => [
         styles.button,
-        { backgroundColor: background, opacity: disabled ? 0.5 : pressed ? 0.8 : 1 },
-        variant === 'secondary' && styles.buttonSecondary,
+        {
+          backgroundColor: bgColor,
+          borderColor: borderColor,
+          borderWidth: borderWidth,
+          // Feedback visual: se encoge un poquito al presionar
+          transform: [{ scale: pressed && !disabled ? 0.96 : 1 }],
+        },
       ]}
     >
-      <Text style={[styles.buttonText, { color: textColor }]}>{label}</Text>
+      <Text style={[styles.buttonText, { color: txtColor }]}>
+        {label}
+      </Text>
     </Pressable>
   );
 }
@@ -50,7 +80,11 @@ export function Field(props: TextInputProps & { label: string }) {
   return (
     <View style={styles.field}>
       <Text style={styles.label}>{label}</Text>
-      <TextInput placeholderTextColor={colors.muted} style={[styles.input, style]} {...rest} />
+      <TextInput
+        placeholderTextColor={colors.muted}
+        style={[styles.input, style]}
+        {...rest}
+      />
     </View>
   );
 }
@@ -77,28 +111,45 @@ export function ErrorView({ message, onRetry }: { message: string; onRetry?: () 
 }
 
 export const text = StyleSheet.create({
-  title: { fontSize: 20, fontWeight: '700', color: colors.text },
-  body: { fontSize: 15, color: colors.text },
+  title: { fontSize: 28, fontWeight: '800', color: colors.text, letterSpacing: 0.5 },
+  body: { fontSize: 15, color: colors.muted, lineHeight: 22 },
   muted: { fontSize: 13, color: colors.muted },
 });
 
 const styles = StyleSheet.create({
-  card: { backgroundColor: colors.card, borderRadius: 12, padding: 16, gap: 6, borderWidth: 1, borderColor: colors.border },
-  button: { borderRadius: 10, paddingVertical: 12, paddingHorizontal: 16, alignItems: 'center' },
-  buttonSecondary: { borderWidth: 1, borderColor: colors.border },
-  buttonText: { fontSize: 15, fontWeight: '600' },
-  field: { gap: 4 },
-  label: { fontSize: 13, color: colors.muted },
-  input: {
+  card: {
     backgroundColor: colors.card,
+    borderRadius: 20,
+    padding: 24,
+    gap: 20,
+    marginBottom: 16,
     borderWidth: 1,
     borderColor: colors.border,
-    borderRadius: 10,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    fontSize: 15,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.4,
+    shadowRadius: 12,
+    elevation: 8,
+  },
+  button: {
+    borderRadius: 12,
+    paddingVertical: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  buttonText: { fontSize: 16, fontWeight: '700', letterSpacing: 0.5 },
+  field: { gap: 8 },
+  label: { fontSize: 13, fontWeight: '600', color: colors.muted, textTransform: 'uppercase', letterSpacing: 1 },
+  input: {
+    backgroundColor: colors.inputBg,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 16,
+    fontSize: 16,
     color: colors.text,
   },
-  centered: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 24, gap: 12 },
-  error: { color: colors.danger, textAlign: 'center' },
+  centered: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 24, backgroundColor: colors.bg },
+  error: { color: colors.danger, textAlign: 'center', fontWeight: 'bold' },
 });

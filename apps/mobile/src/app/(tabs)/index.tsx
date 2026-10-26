@@ -7,7 +7,6 @@ import { api, type ParkingSession, type Vehicle } from '../../lib/api';
 import { formatDateTime, placeLabel } from '../../lib/format';
 import { Button, Card, ErrorView, LoadingView, colors, text } from '../../lib/ui';
 
-// Pantalla principal: donde esta el coche ahora (lo haya guardado el reloj o el telefono).
 export default function MyCarScreen() {
   const queryClient = useQueryClient();
   const [saveError, setSaveError] = useState<string | null>(null);
@@ -15,7 +14,7 @@ export default function MyCarScreen() {
   const active = useQuery({
     queryKey: ['parking', 'active'],
     queryFn: () => api<{ sessions: ParkingSession[] }>('/parking/active'),
-    refetchInterval: 15_000, // para ver lo que guarda el reloj sin recargar
+    refetchInterval: 15_000,
   });
   const vehicles = useQuery({
     queryKey: ['vehicles'],
@@ -29,12 +28,13 @@ export default function MyCarScreen() {
     onSuccess: refresh,
   });
 
-  // Guardar desde el telefono (por si no se usa el reloj).
   const saveHere = useMutation({
     mutationFn: async (vehicleId: string) => {
       const permission = await Location.requestForegroundPermissionsAsync();
       if (permission.status !== 'granted') throw new Error('Permite el acceso a la ubicación');
+
       const position = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.High });
+
       return api('/parking', {
         method: 'POST',
         body: {
@@ -81,7 +81,7 @@ export default function MyCarScreen() {
               {formatDateTime(session.parkedAt)} · desde {session.source === 'watch' ? 'el reloj' : 'el teléfono'}
             </Text>
             {session.notes.map((note) => (
-              <Text key={note.id} style={text.body}>
+              <Text key={note.id} style={[text.body, { color: colors.text, marginTop: 8 }]}>
                 • {note.body}
               </Text>
             ))}
@@ -90,12 +90,13 @@ export default function MyCarScreen() {
             label={endParking.isPending ? 'Guardando...' : 'Ya lo recogí'}
             onPress={() => endParking.mutate(session.id)}
             disabled={endParking.isPending}
+            variant="danger"
           />
         </>
       ) : (
         <Card>
           <Text style={text.title}>Sin ubicación guardada</Text>
-          <Text style={text.muted}>Guarda dónde dejaste el coche desde el reloj o desde aquí.</Text>
+          <Text style={text.body}>Guarda dónde dejaste el coche desde el reloj o desde aquí.</Text>
         </Card>
       )}
 
@@ -109,6 +110,7 @@ export default function MyCarScreen() {
       ) : (
         <Text style={text.muted}>Agrega un vehículo en la pestaña Vehículos.</Text>
       )}
+
       {saveError && <Text style={styles.error}>{saveError}</Text>}
       <View style={styles.spacer} />
     </ScrollView>
@@ -116,8 +118,8 @@ export default function MyCarScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { padding: 16, gap: 12, backgroundColor: colors.bg, flexGrow: 1 },
-  map: { height: 280, borderRadius: 12 },
-  error: { color: colors.danger },
-  spacer: { height: 24 },
+  container: { padding: 16, gap: 16, backgroundColor: colors.bg, flexGrow: 1 },
+  map: { height: 280, borderRadius: 20 }, // Mapa con bordes redondeados
+  error: { color: colors.danger, textAlign: 'center', marginTop: 8 },
+  spacer: { height: 40 },
 });
