@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Tabs } from 'expo-router/tabs';
 import { Ionicons } from '@expo/vector-icons';
 import { colors } from '../../lib/ui';
@@ -26,28 +27,28 @@ export default function TabsLayout() {
         name="index"
         options={{
           title: 'Mi coche',
-          tabBarIcon: (props) => <Ionicons name="car" size={props.size} color={props.color} />
+          tabBarIcon: (props: any) => <Ionicons name="car" size={props.size} color={props.color as string} />
         }}
       />
       <Tabs.Screen
         name="historial"
         options={{
           title: 'Historial',
-          tabBarIcon: (props) => <Ionicons name="time" size={props.size} color={props.color} />
+          tabBarIcon: (props: any) => <Ionicons name="time" size={props.size} color={props.color as string} />
         }}
       />
       <Tabs.Screen
         name="vehiculos"
         options={{
           title: 'Vehículos',
-          tabBarIcon: (props) => <Ionicons name="list" size={props.size} color={props.color} />
+          tabBarIcon: (props: any) => <Ionicons name="list" size={props.size} color={props.color as string} />
         }}
       />
       <Tabs.Screen
         name="ajustes"
         options={{
           title: 'Ajustes',
-          tabBarIcon: (props) => <Ionicons name="settings" size={props.size} color={props.color} />
+          tabBarIcon: (props: any) => <Ionicons name="settings" size={props.size} color={props.color as string} />
         }}
       />
     </Tabs>
