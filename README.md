@@ -19,7 +19,7 @@ Cada app es un proyecto npm independiente: se instala y se corre dentro de su ca
 
 - Node.js 22 LTS y Git
 - Android Studio con SDK, Platform-Tools y Emulator, más dos emuladores: Pixel 8 (API 34, con Google Play) y Wear OS Large Round (Wear OS 5, API 34)
-- Docker Desktop para MySQL local, o la API compartida en Railway
+- Docker Desktop para MySQL local, o la API compartida en Render
 
 La guía completa de instalación está en [CONTRIBUTING.md](CONTRIBUTING.md#preparar-tu-equipo).
 
@@ -86,7 +86,7 @@ Todas las rutas, salvo `health`, `auth` y `pair/code|status`, requieren `Authori
 | --- | --- | --- |
 | Reloj | Jeshua | Probar en emulador Wear OS, ajustar UI a pantalla redonda, validar brújula |
 | Móvil | Kassie | Iconos de pestañas, diseño final, editar vehículos, filtro del historial |
-| API | Isabel | Desplegar en Railway, revisar errores con datos reales |
+| API | Isabel | Desplegar en Render, revisar errores con datos reales |
 | Entrega | Todos | Flujo completo en el teléfono de Isabel, APKs con EAS, video de respaldo |
 
 ## Documentación
