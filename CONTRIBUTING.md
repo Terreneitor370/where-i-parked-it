@@ -21,7 +21,7 @@ Reglas cortas para entregar el lunes 26 a las 15:00. La versión larga, con la a
 
 **Todos:**
 
-1. Instala Git, Node.js 22 LTS, GitHub CLI (`gh`) y Docker Desktop. Con 8 GB de RAM, omite Docker y usa la API compartida en Railway.
+1. Instala Git, Node.js 22 LTS, GitHub CLI (`gh`) y Docker Desktop. Con 8 GB de RAM, omite Docker y usa la API compartida en Render.
 2. Instala Android Studio con *Android SDK*, *Android SDK Platform-Tools* y *Android Emulator*.
 3. Configura `adb` en la terminal:
    - Windows: `ANDROID_HOME` = `%LOCALAPPDATA%\Android\Sdk` y agrega `%ANDROID_HOME%\platform-tools` al `PATH`. Activa *Plataforma del hipervisor de Windows*.
@@ -117,7 +117,7 @@ Después del merge, avisa en el grupo para que todos actualicen `main`.
 ## Entrega
 
 1. Domingo 20:00: se congela `main`; solo entran correcciones.
-2. Ambas apps apuntan a la API de Railway (`EXPO_PUBLIC_API_URL`).
+2. Ambas apps apuntan a la API de Render (`EXPO_PUBLIC_API_URL`).
 3. APKs: `npm i -g eas-cli`, `eas login`, y en `apps/mobile` y `apps/watch`: `eas build -p android --profile preview`. Lanza los builds temprano: la cola gratuita puede tardar horas. Respaldo local: `npx expo run:android --variant release`.
 4. El móvil necesita `GOOGLE_MAPS_API_KEY` en EAS o el mapa sale en blanco en el APK.
 5. Instala los APKs (`adb -s emulator-5556 install <archivo>.apk`) y prueba el flujo completo del README.
