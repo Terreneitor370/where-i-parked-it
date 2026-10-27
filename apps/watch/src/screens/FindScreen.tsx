@@ -16,6 +16,7 @@ export function FindScreen({ onBack }: { onBack: () => void }) {
   const [target, setTarget] = useState<Active | null>(null);
   const [here, setHere] = useState<Location.LocationObjectCoords | null>(null);
   const [heading, setHeading] = useState(0);
+  const [hasHeading, setHasHeading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -38,7 +39,11 @@ export function FindScreen({ onBack }: { onBack: () => void }) {
       headingSub = await Location.watchHeadingAsync((value) => {
         // trueHeading es -1 si no hay datos suficientes; entonces se usa el magnetico.
         const next = value.trueHeading >= 0 ? value.trueHeading : value.magHeading;
-        if (!cancelled) setHeading(next);
+        if (!Number.isFinite(next)) return;
+        if (!cancelled) {
+          setHeading(next);
+          setHasHeading(true);
+        }
       });
     })();
 
@@ -79,7 +84,8 @@ export function FindScreen({ onBack }: { onBack: () => void }) {
 
   const car = { latitude: target.latitude, longitude: target.longitude };
   const meters = distanceMeters(here, car);
-  const rotation = arrowRotation(bearingDegrees(here, car), heading);
+  const bearing = bearingDegrees(here, car);
+  const rotation = hasHeading ? arrowRotation(bearing, heading) : bearing;
 
   return (
     <Screen scroll>
@@ -87,6 +93,7 @@ export function FindScreen({ onBack }: { onBack: () => void }) {
         <Text style={styles.arrow}>▲</Text>
       </View>
       <Title>{formatDistance(meters)}</Title>
+      {!hasHeading && <Muted>Mueve el reloj para calibrar la brújula</Muted>}
       {target.level && <Muted>{target.level}</Muted>}
       <Button label="Ya lo recogí" onPress={pickedUp} />
       <Button label="Volver" variant="secondary" onPress={onBack} />

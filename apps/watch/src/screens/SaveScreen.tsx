@@ -10,9 +10,11 @@ import { Button, Loading, Muted, Screen, Title, colors } from '../ui';
 // y el registro se guarda en SQLite + outbox.
 
 type Props = { vehicle: LocalVehicle; onDone: () => void; onCancel: () => void };
+const GPS_TIMEOUT_MS = 12000;
 
 export function SaveScreen({ vehicle, onDone, onCancel }: Props) {
   const [position, setPosition] = useState<Location.LocationObject | null>(null);
+  const [usingLastKnown, setUsingLastKnown] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [level, setLevel] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
@@ -26,9 +28,29 @@ export function SaveScreen({ vehicle, onDone, onCancel }: Props) {
         return;
       }
       try {
-        const current = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.High });
-        if (!cancelled) setPosition(current);
+        const current = await new Promise<Location.LocationObject>((resolve, reject) => {
+          const timeout = setTimeout(() => reject(new Error('GPS_TIMEOUT')), GPS_TIMEOUT_MS);
+          Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.High })
+            .then((value) => {
+              clearTimeout(timeout);
+              resolve(value);
+            })
+            .catch((reason) => {
+              clearTimeout(timeout);
+              reject(reason);
+            });
+        });
+        if (!cancelled) {
+          setPosition(current);
+          setUsingLastKnown(false);
+        }
       } catch {
+        const fallback = await Location.getLastKnownPositionAsync({ maxAge: 120000, requiredAccuracy: 100 });
+        if (fallback && !cancelled) {
+          setPosition(fallback);
+          setUsingLastKnown(true);
+          return;
+        }
         if (!cancelled) setError('No se pudo obtener el GPS. Intenta al aire libre.');
       }
     })();
@@ -68,6 +90,7 @@ export function SaveScreen({ vehicle, onDone, onCancel }: Props) {
     <Screen scroll>
       <Title>¿Dónde quedó?</Title>
       <Muted>Precisión ±{Math.round(position.coords.accuracy ?? 0)} m</Muted>
+      {usingLastKnown && <Muted>Usando la última ubicación disponible del reloj</Muted>}
       <View style={styles.chips}>
         {LEVEL_PRESETS.map((preset) => (
           <Pressable
