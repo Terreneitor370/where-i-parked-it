@@ -1,6 +1,6 @@
 # Where I Parked It — Arquitectura y flujo de trabajo
 
-Actualizado: 23 de octubre de 2026 · Isabel
+Actualizado: 25 de octubre de 2026 · Isabel
 
 El proyecto queda listo el lunes 26 de octubre de 2026 a las 15:00 para entregarse el martes 27. Son tres proyectos independientes en un repo: una API Node.js con MySQL, una app móvil Android con Expo y una app de reloj Wear OS con Expo. Solo el reloj guarda en SQLite local, para funcionar sin teléfono ni internet. `main` queda protegida con un ruleset que solo Isabel puede saltar al hacer merge. El esqueleto de las tres apps ya está en la carpeta del repo, y la API está probada contra MySQL 8.
 
@@ -588,41 +588,69 @@ Prueba mínima antes de cada PR que toque sync: activar modo avión en el reloj,
 
 6.  Mover la ubicación del emulador y abrir *Buscar mi coche*: la flecha y la distancia cambian. Terminar con *Ya lo recogí*.
 
-## 7. Plan para el lunes
+## 7. Reparto por integrante y plan final
 
-El esqueleto ya trae la base de las tres apps, así que cada día se dedica a probar, corregir y pulir. El orden protege lo más riesgoso: el reloj primero, la integración el domingo y el lunes solo correcciones.
+Cada integrante es dueño de un módulo (una carpeta del repo) y lo entrega funcionando el lunes 26 a las 15:00. Al domingo 25 a las 22:00, `main` solo tiene el commit del esqueleto y no hay PRs, así que lo que queda se reparte desde esta noche.
 
-| Día           | Isabel (API y repo)                                                               | Jeshua (reloj)                                                                 | Kassie (móvil)                                                       |
-|---------------|-----------------------------------------------------------------------------------|--------------------------------------------------------------------------------|----------------------------------------------------------------------|
-| Vie 23, noche | Primer push del esqueleto, colaboradores, ruleset, check `ci`, etiquetas e issues | Preparar computadora; correr la app del reloj en el emulador Wear OS           | Preparar computadora; correr la app móvil en Expo Go en el emulador  |
-| Sáb 24        | Desplegar API en Railway; clave de Google Maps; revisar PRs dos veces al día      | Guardar, brújula y emparejar funcionando en el emulador; ajustar la UI redonda | Login, vehículos, historial y mapa contra la API; iconos de pestañas |
-| Dom 25        | Pruebas en tu teléfono; corregir errores de API y sync                            | Prueba de modo avión de punta a punta; correcciones                            | Diseño final, editar vehículos, filtro del historial                 |
-| Lun 26        | Build de APKs, flujo completo de la demo, video, tag `v1.0.0`                     | Solo correcciones                                                              | Solo correcciones                                                    |
+| Integrante | Módulo                     | Carpeta                   | Pasos de la demo que le tocan |
+|------------|----------------------------|---------------------------|-------------------------------|
+| Jeshua     | Reloj Wear OS              | `apps/watch`              | 2, 4 y 6                      |
+| Kassie     | App móvil                  | `apps/mobile`             | 1, 3 y 5                      |
+| Isabel     | API, integración y entrega | `apps/api`, repo, `docs/` | Flujo completo en su teléfono |
 
-**Puntos de control (todos):**
+### Reglas para las últimas horas
 
-- [ ] Viernes 23, 23:00: el esqueleto está en `main` y las tres apps arrancan en las tres computadoras
+- **Cada quien trabaja solo en su carpeta.** Si alguien necesita cambiar algo en la carpeta de otra persona, primero avisa en el grupo.
 
-- [ ] Sábado 24, 12:00: decisión sobre el reloj (seguir con React Native o plan B)
+- **La API solo la cambia Isabel.** Si a la app móvil o al reloj les falta un dato, se pide; no se modifica `apps/api`.
 
-- [ ] Sábado 24, 20:00: emparejar, guardar y ver en el móvil funciona en emuladores
+- **PRs pequeños y frecuentes.** Isabel revisa el domingo a las 23:30 y después cada 2 horas el lunes.
 
-- [ ] Domingo 25, 20:00: se congela `main`; la prueba de modo avión pasa en el teléfono de Isabel
+- **Ya no se agregan funciones:** solo se hace funcionar lo que ya trae el esqueleto.
 
-- [ ] Lunes 26, 12:00: APKs instalados y flujo de la demo completo
+### Jeshua: módulo Reloj (`apps/watch`)
 
-- [ ] Lunes 26, 15:00: tag `v1.0.0` y video de respaldo grabado: proyecto listo
+Es el módulo de mayor riesgo, así que va primero.
 
-**Issues para crear hoy en GitHub** (uno por fila; etiquetas `api`, `mobile`, `watch`, `probar-en-dispositivo`):
+| Orden       | Tarea                                                      | Archivos                                    | Terminado cuando                                                |
+|-------------|------------------------------------------------------------|---------------------------------------------|-----------------------------------------------------------------|
+| 1 (domingo) | Correr la app en el emulador Wear OS con `npm run android` | `app.json`, `plugins/withWearOS.js`         | La pantalla de emparejar muestra un código                      |
+| 2 (domingo) | Emparejar con la API y sincronizar el vehículo             | `src/screens/PairScreen.tsx`, `src/sync.ts` | El inicio muestra el nombre del vehículo                        |
+| 3           | Guardar con nivel en modo avión                            | `src/screens/SaveScreen.tsx`, `src/db.ts`   | Al quitar el modo avión, el estacionamiento aparece en el móvil |
+| 4           | Flecha y distancia con ubicación simulada                  | `src/screens/FindScreen.tsx`, `src/geo.ts`  | La flecha gira y la distancia cambia al mover la ubicación      |
+| 5           | Ajustar la interfaz a la pantalla redonda                  | `src/ui.tsx`                                | Ningún texto o botón queda recortado                            |
 
-| Issue                                              | Responsable | Etiqueta                          |
-|----------------------------------------------------|-------------|-----------------------------------|
-| Reloj corre en emulador Wear OS con el esqueleto   | Jeshua      | `watch`                           |
-| Ajustar UI del reloj a pantalla redonda            | Jeshua      | `watch`                           |
-| Validar brújula y distancia con ubicación simulada | Jeshua      | `watch`, `probar-en-dispositivo`  |
-| App móvil corre en Expo Go con login y vehículos   | Kassie      | `mobile`                          |
-| Iconos, diseño y editar vehículos                  | Kassie      | `mobile`                          |
-| Mapa y permisos de ubicación en el teléfono real   | Kassie      | `mobile`, `probar-en-dispositivo` |
-| Desplegar API y MySQL en Railway                   | Isabel      | `api`                             |
-| Clave de Google Maps y perfil `preview` de EAS     | Isabel      | `mobile`                          |
-| Prueba de modo avión de punta a punta              | Isabel      | `api`, `watch`                    |
+Ramas: `feat/watch-emulador` y `feat/watch-ui-redonda`. Si el paso 1 no funciona el domingo antes de las 00:00, Jeshua avisa en ese momento para resolverlo con Isabel el lunes a las 8:00.
+
+### Kassie: módulo Móvil (`apps/mobile`)
+
+| Orden       | Tarea                                                               | Archivos                                                     | Terminado cuando                             |
+|-------------|---------------------------------------------------------------------|--------------------------------------------------------------|----------------------------------------------|
+| 1 (domingo) | Correr la app en Expo Go en el emulador con `npm start` + tecla `a` | `.env`                                                       | Aparece la pantalla de login                 |
+| 2 (domingo) | Registro, login y vehículos                                         | `src/app/login.tsx`, `src/app/(tabs)/vehiculos.tsx`          | Puede crear una cuenta y agregar un vehículo |
+| 3           | "Mi coche" con mapa y "Ya lo recogí"                                | `src/app/(tabs)/index.tsx`                                   | Se ve el marcador de lo que guardó el reloj  |
+| 4           | Historial y emparejar reloj                                         | `src/app/(tabs)/historial.tsx`, `src/app/(tabs)/ajustes.tsx` | El código del reloj se confirma desde aquí   |
+| 5           | Diseño: iconos de pestañas, colores y espacios                      | `src/lib/ui.tsx`, `src/app/(tabs)/_layout.tsx`               | Se ve presentable para la demo               |
+
+Ramas: `feat/mobile-flujo` y `feat/mobile-diseno`. Editar vehículos solo si sobra tiempo.
+
+### Isabel: API, integración y entrega (`apps/api`, repo, `docs/`)
+
+| Cuándo                                  | Tarea                                                                                 | Terminado cuando                                 |
+|-----------------------------------------|---------------------------------------------------------------------------------------|--------------------------------------------------|
+| Domingo, antes de que el equipo empiece | Ruleset de `main` y colaboradores (sección 5.2), si aún no está; levantar la API      | Kassie y Jeshua pueden abrir PRs y ver `/health` |
+| Domingo                                 | Si sus computadoras no aguantan Docker, desplegar la API en Railway y pasarles la URL | Los dos usan la misma API                        |
+| Domingo 23:30 y lunes cada 2 h          | Revisar y hacer merge de PRs; corregir los errores de API que reporten                | Ningún PR espera más de 2 h                      |
+| Lunes 8:00                              | Clave de Google Maps y URL de la API en `eas.json` de las dos apps                    | El perfil `preview` está listo                   |
+| Lunes 10:00                             | Lanzar los builds de los dos APK con EAS (respaldo: build local)                      | APKs instalados en su teléfono y en el emulador  |
+| Lunes 12:00 a 15:00                     | Flujo completo de la demo en su teléfono, video de respaldo, tag `v1.0.0`             | Proyecto listo                                   |
+
+### Puntos de control
+
+- [ ] Domingo 25, 23:30: las dos apps arrancan en las computadoras de Kassie y Jeshua
+
+- [ ] Lunes 26, 10:00: emparejar, guardar sin conexión y verlo en el móvil funciona en emuladores; desde aquí solo se corrigen errores
+
+- [ ] Lunes 26, 13:00: demo completa en el teléfono de Isabel con los APK
+
+- [ ] Lunes 26, 15:00: tag `v1.0.0` y video de respaldo: proyecto listo
